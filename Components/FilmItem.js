@@ -3,21 +3,22 @@ import { StyleSheet, View, Text, Image } from "react-native";
 
 class FilmItem extends React.Component {
   render() {
+    const film = this.props.film;
     return (
       <View style={styles.main_container}>
-        <Image style={styles.image_zone} source={{ uri: "image" }} />
+        <Image style={styles.image} source={{ uri: "image" }} />
         <View style={styles.contain_container}>
           <View style={styles.header_container}>
-            <Text style={styles.title_text}>Titre du Film</Text>
-            <Text style={styles.vote_text}>Vote du Film</Text>
+            <Text style={styles.title_text}>{film.title}</Text>
+            <Text style={styles.vote_text}>Moy:{film.vote_average}</Text>
           </View>
           <View style={styles.description_container}>
             <Text style={styles.description_text} numberOfLines={6}>
-              Descrition du Film
+              {film.overview}
             </Text>
           </View>
           <View style={styles.date_container}>
-            <Text style={styles.date_text}>Sortie 00/00/0000</Text>
+            <Text style={styles.date_text}>Sortie le {film.release_date}</Text>
           </View>
         </View>
       </View>
@@ -27,35 +28,33 @@ class FilmItem extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    height: 190,
-    flexDirection: "row",
-    backgroundColor: "yellow"
+    height: 170,
+    flexDirection: "row"
+    // backgroundColor: "yellow"
   },
-  image_zone: {
+  image: {
     flex: 1,
     backgroundColor: "gray",
     margin: 5
   },
   contain_container: {
     flex: 2,
-    backgroundColor: "red",
-    flexDirection: "column"
+    flexDirection: "column",
+    margin: 5
   },
   header_container: {
-    flex: 1,
-    backgroundColor: "blue",
+    flex: 3,
     flexDirection: "row"
   },
   title_text: {
-    textAlign: "left",
-    backgroundColor: "yellow",
+    fontWeight: "bold",
+    fontSize: 16,
+    flex: 4,
     flexWrap: "wrap",
-    flex: 3
+    paddingRight: 5
   },
   vote_text: {
-    textAlign: "right",
-    backgroundColor: "pink",
-    flex: 2
+    textAlign: "right"
   },
   description_container: {
     justifyContent: "center",
@@ -67,12 +66,15 @@ const styles = StyleSheet.create({
   },
   date_container: {
     flex: 1,
-    height: 30,
-    backgroundColor: "blue"
+    height: 30
   },
   date_text: {
-    textAlign: "right"
+    textAlign: "right",
+    fontSize: 16
   }
 });
 
 export default FilmItem;
+//Les props def les propriétés a nos component custom et de faire passer les infos en les components.
+// Les props st def par le component parent et ne peuvent pas etre modif par le component enfant.
+//D'où l'importance des state
