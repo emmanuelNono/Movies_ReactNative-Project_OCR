@@ -4,7 +4,7 @@ export default data = [
   {
     id: 181808,
     vote_average: 7.2,
-    title: "Star Wars VIII - Les derniers Jedi",
+    title: "Star Wars XVIII - Les derniers Jedi",
     poster_path: "",
     original_title: "Star Wars: The Last Jedi",
     overview:

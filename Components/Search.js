@@ -18,14 +18,13 @@ class Search extends React.Component {
   // }
 
   _loadFilms() {
+    getFilmsFromApiWithSearchedText("star").then(data => console.log(data));
     // getFilmsFromApiWithSearchedText("star").then(data =>
     //   this.setState({ films: data.results })
     // );
-    getFilmsFromApiWithSearchedText("star").then(data => console.log(data));
   }
 
   render() {
-    console.log("RENDER");
     return (
       <View style={styles.main_container}>
         <TextInput style={styles.textinput} placeholder="titre du film" />
