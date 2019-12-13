@@ -5,7 +5,8 @@ import {
   Button,
   TextInput,
   FlatList,
-  Text
+  Text,
+  ActivityIndicator
 } from "react-native";
 import films from "../Helpers/FilmsData";
 import FilmItem from "./FilmItem";
@@ -14,30 +15,103 @@ import { getFilmsFromApiWithSearchedText } from "../API/TMDBApi";
 class Search extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { films: [] };
+    this.page = 0;
+    this.totalpages = 0;
+    this.searchedText = "";
+    this.state = {
+      films: [],
+      isLoading: false
+    };
   }
 
   _loadFilms() {
-    getFilmsFromApiWithSearchedText("star").then(data => console.log(data));
-    getFilmsFromApiWithSearchedText("star").then(data =>
-      this.setState({ films: data.results })
+    this.setState({ isLoading: true });
+    if (this.searchedText.length > 0) {
+      getFilmsFromApiWithSearchedText(this.searchedText, this.page + 1).then(
+        data => {
+          this.page = data.page;
+          this.totalpages = data.total_pages;
+          this.setState({
+            films: [...this.state.films, ...data.results],
+            isLoading: false // Arret du chargement
+          });
+        }
+      );
+    }
+  }
+
+  _displayLoading() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading_container}>
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    }
+  }
+
+  _searchTextInputChanged(text) {
+    this.searchedText = text;
+  }
+
+  _searchFilms() {
+    this.page = 0;
+    this.totalpages = 0;
+    this.setState(
+      //setState is asyncrone, theirn 2nd param is a void that execute when setState is finish
+      {
+        films: []
+      },
+      () => {
+        console.log(
+          "page = " +
+            this.page +
+            " / total pages =" +
+            this.totalpages +
+            " / nombre de films = " +
+            this.state.films.length
+        );
+        this._loadFilms();
+      }
     );
   }
 
+  _displayDetailForFilm = idFilm => {
+    console.log("affiche le film avec id = " + idFilm);
+  };
+
   render() {
+    console.log(this.state.isLoading);
     return (
       <View style={styles.main_container}>
-        <TextInput style={styles.textinput} placeholder="titre du film" />
+        <TextInput
+          style={styles.textinput}
+          placeholder="titre du film"
+          onSubmitEditing={() => this._searchFilms()}
+          onChangeText={text => this._searchTextInputChanged(text)}
+        />
         <Button
           style={{ height: 50 }}
           title="Rechercher"
-          onPress={() => this._loadFilms()}
+          onPress={() => this._searchFilms()}
         />
         <FlatList
           data={this.state.films}
           keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => <FilmItem film={item} />}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => {
+            if (this.page < this.totalpages) {
+              this._loadFilms();
+            }
+          }}
+          renderItem={({ item }) => (
+            <FilmItem
+              film={item}
+              displayDetailForFilm={this._displayDetailForFilm}
+            />
+          )}
         />
+        {this._displayLoading()}
       </View>
     );
   }
@@ -45,7 +119,6 @@ class Search extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    marginTop: 20,
     flex: 1
   },
   textinput: {
@@ -55,6 +128,15 @@ const styles = StyleSheet.create({
     borderColor: "#000000",
     borderWidth: 1,
     paddingLeft: 5
+  },
+  loading_container: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 100,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center"
   }
 });
 
